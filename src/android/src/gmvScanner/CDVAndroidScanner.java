@@ -15,7 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
-
+import android.util.Log;
 import javax.security.auth.callback.Callback;
 
 
@@ -25,6 +25,7 @@ import javax.security.auth.callback.Callback;
 public class CDVAndroidScanner extends CordovaPlugin {
 
     protected CallbackContext mCallbackContext;
+    private static final String TAG = "TESTGMV-CDVAndroidScanner";
 
     private static final int RC_BARCODE_CAPTURE = 9001;
 
@@ -57,7 +58,12 @@ public class CDVAndroidScanner extends CordovaPlugin {
 		Intent intent = new Intent(context, SecondaryActivity.class);
         intent.putExtra("DetectionTypes", args.optInt(0, 1234));
         intent.putExtra("ViewFinderWidth", args.optDouble(1, .5));
-        intent.putExtra("ViewFinderHeight", args.optDouble(1, .7));
+        intent.putExtra("ViewFinderHeight", args.optDouble(2, .7));
+        intent.putExtra("ViewDisplayString", args.optString(3) );
+        //System.out.println("CDVAndroidScanner  =======> ");
+
+        Log.d(TAG, "ViewDisplayString Is " );
+        Log.d(TAG, String.valueOf(  args ) );
 
         this.cordova.setActivityResultCallback(this);
         this.cordova.startActivityForResult(this, intent, RC_BARCODE_CAPTURE);
