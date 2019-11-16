@@ -56,6 +56,8 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.gms.common.images.Size;
+import android.R;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -65,7 +67,7 @@ import java.io.IOException;
  * size, and ID of each barcode.
  */
 public final class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener {
-    private static final String TAG = "Barcode-reader";
+    private static final String TAG = "TESTGMV-Barcode-reader";
 
     // intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
@@ -75,8 +77,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     // constants used to pass extra data in the intent
     public Integer DetectionTypes;
-    public double ViewFinderWidth = .5;
-    public double ViewFinderHeight = .7;
+    public double ViewFinderWidth = .8;
+    public double ViewFinderHeight = .5;
+    public String ViewDisplayString;
 
     public static final String BarcodeObject = "Barcode";
 
@@ -87,13 +90,14 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
-
+    private TextView text;
     /**
      * Initializes the UI and creates the detector pipeline.
      */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        //setContentView(R.layout.barcode_capture);
 
         // Hide the status bar and action bar.
         View decorView = getWindow().getDecorView();
@@ -112,6 +116,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
 
         setContentView(getResources().getIdentifier("barcode_capture", "layout", getPackageName()));
+        //text = (TextView)findViewById(R.id.text_view_id);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -119,12 +124,21 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         mPreview.ViewFinderWidth = ViewFinderWidth;
         mPreview.ViewFinderHeight = ViewFinderHeight;
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(getResources().getIdentifier("graphicOverlay", "id", getPackageName()));
-
+        text     = (TextView) findViewById(getResources().getIdentifier("text_view_id", "id", getPackageName()));
+        
+       
 
         // read parameters from the intent used to launch the activity.
         DetectionTypes = getIntent().getIntExtra("DetectionTypes", 1234);
         ViewFinderWidth = getIntent().getDoubleExtra("ViewFinderWidth", .5);
         ViewFinderHeight = getIntent().getDoubleExtra("ViewFinderHeight", .7);
+        ViewDisplayString = getIntent().getStringExtra("ViewDisplayString");
+        text.setText(ViewDisplayString);
+        Log.w(TAG, "ViewDisplayString is ");
+        Log.w(TAG, ViewDisplayString );
+
+         System.out.println("BarcodeCaptureActivity  =======> ");
+
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
