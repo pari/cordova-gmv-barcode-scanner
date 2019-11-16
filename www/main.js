@@ -1,3 +1,4 @@
+cordova.define("cordova-gmv-barcode-scanner.cordova-gmv-barcode-scanner", function(require, exports, module) {
 // JavaScript Document
 CDV = ( typeof CDV == 'undefined' ? {} : CDV );
 var cordova = window.cordova || window.Cordova;
@@ -28,7 +29,8 @@ GMVBarcodeScanner.prototype.scan = function(params, callback) {
         detectorSize: {
             width: .5,
             height: .7
-        }
+        },
+        displayString: ""
     };
 
     for(var key in params) {
@@ -84,6 +86,7 @@ GMVBarcodeScanner.prototype.scan = function(params, callback) {
         }
     }
 
+    sendSettings.push(settings.displayString);
     this.sendScanRequest(sendSettings, callback);
 };
 
@@ -414,3 +417,4 @@ GMVBarcodeScanner.install = function() {
 };
 
 cordova.addConstructor(GMVBarcodeScanner.install);
+});
