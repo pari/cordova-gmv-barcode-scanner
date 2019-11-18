@@ -60,6 +60,8 @@ public class CDVAndroidScanner extends CordovaPlugin {
         intent.putExtra("ViewFinderWidth", args.optDouble(1, .5));
         intent.putExtra("ViewFinderHeight", args.optDouble(2, .7));
         intent.putExtra("ViewDisplayString", args.optString(3) );
+        intent.putExtra("ScanMode", args.optInt(4, 0) );
+        intent.putExtra("allowDuplicates", args.optInt(5, 0) );
         //System.out.println("CDVAndroidScanner  =======> ");
 
         Log.d(TAG, "ViewDisplayString Is " );
@@ -78,14 +80,11 @@ public class CDVAndroidScanner extends CordovaPlugin {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 Intent d = new Intent();
                 if (data != null) {
-                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     JSONArray result = new JSONArray();
-                    result.put(barcode.rawValue);
+                    result.put( data.getStringExtra(BarcodeCaptureActivity.BarcodeObject) );
                     result.put("");
                     result.put("");
                     mCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
-
-                    Log.d("CDVAndroidScanner", "Barcode read: " + barcode.displayValue);
                 }
             } else {
                 String err = data.getParcelableExtra("err");
