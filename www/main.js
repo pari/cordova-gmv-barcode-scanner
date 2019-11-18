@@ -29,7 +29,10 @@ GMVBarcodeScanner.prototype.scan = function(params, callback) {
             width: .5,
             height: .7
         },
-        displayString: ""
+        displayString: "",
+        scanMode : 0 , // 0 for single scan , 1 for continuous 
+        allowDuplicates : 0 // this variable applies only for continuous mode , 
+            // 0 for do not allow duplicates , 1 for allow duplicates 
     };
 
     for(var key in params) {
@@ -85,6 +88,8 @@ GMVBarcodeScanner.prototype.scan = function(params, callback) {
         }
     }
     sendSettings.push(settings.displayString);
+    sendSettings.push(settings.scanMode);
+    sendSettings.push(settings.allowDuplicates);
     this.sendScanRequest(sendSettings, callback);
 };
 
