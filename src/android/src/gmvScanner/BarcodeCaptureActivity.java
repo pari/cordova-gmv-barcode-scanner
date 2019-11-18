@@ -44,7 +44,7 @@ import android.widget.Toast;
 import android.view.WindowManager;
 import android.view.Display;
 import android.graphics.Point;
-
+import android.os.Vibrator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -58,15 +58,18 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.gms.common.images.Size;
 import android.R;
 import android.widget.TextView;
-
+import android.widget.Button;
+import java.util.*;
 import java.io.IOException;
+import android.view.View.OnClickListener;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
  * size, and ID of each barcode.
  */
-public final class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener {
+public final class BarcodeCaptureActivity extends AppCompatActivity implements 
+     BarcodeGraphicTracker.BarcodeUpdateListener {
     private static final String TAG = "TESTGMV-Barcode-reader";
 
     // intent request code to handle updating play services if needed.
@@ -77,6 +80,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     // constants used to pass extra data in the intent
     public Integer DetectionTypes;
+    public Integer ScanMode;
+    public Integer AllowDuplicates;
     public double ViewFinderWidth = .8;
     public double ViewFinderHeight = .5;
     public String ViewDisplayString;
@@ -91,12 +96,15 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
     private TextView text;
+    private Button   done; 
+    private ArrayList<String> scannedBarcodes;
     /**
      * Initializes the UI and creates the detector pipeline.
      */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        scannedBarcodes = new ArrayList<String>();
         //setContentView(R.layout.barcode_capture);
 
         // Hide the status bar and action bar.
@@ -125,16 +133,20 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         mPreview.ViewFinderHeight = ViewFinderHeight;
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(getResources().getIdentifier("graphicOverlay", "id", getPackageName()));
         text     = (TextView) findViewById(getResources().getIdentifier("text_view_id", "id", getPackageName()));
-        
-       
+        done     = (Button) findViewById(getResources().getIdentifier("button_view_id", "id", getPackageName())); 
+        done.setOnClickListener(donelistener);
 
         // read parameters from the intent used to launch the activity.
         DetectionTypes = getIntent().getIntExtra("DetectionTypes", 1234);
         ViewFinderWidth = getIntent().getDoubleExtra("ViewFinderWidth", .5);
         ViewFinderHeight = getIntent().getDoubleExtra("ViewFinderHeight", .7);
         ViewDisplayString = getIntent().getStringExtra("ViewDisplayString");
+        ScanMode = getIntent().getIntExtra("ScanMode", 0);
+        AllowDuplicates = getIntent().getIntExtra("allowDuplicates", 0);
+
+
         text.setText(ViewDisplayString);
-        Log.w(TAG, "ViewDisplayString is ");
+        Log.w(TAG, "ViewDisplayString is ** ");
         Log.w(TAG, ViewDisplayString );
 
          System.out.println("BarcodeCaptureActivity  =======> ");
@@ -513,11 +525,44 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         return getCheckDigit(vin) == vin.charAt(8);
     }
 
+    public void getVibrate(){
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(200);
+        // Vibrate for 500 milliseconds
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26 
+            v.vibrate(500);
+        }*/
+    }
+
+
+
+
+
+
+    private OnClickListener donelistener = new OnClickListener() {
+        public void onClick(View v) {
+          // do something when the button is clicked
+             if(scannedBarcodes.size() > 0){
+             Intent data = new Intent();
+             data.putExtra(BarcodeObject, String.valueOf(scannedBarcodes) );
+             setResult(CommonStatusCodes.SUCCESS, data );
+             finish();
+            }
+        }
+    };
+
+  
+
+
     @Override
-    public void onBarcodeDetected(Barcode barcode) {
+    public void onBarcodeDetected(final Barcode barcode) {
         //do something with barcode data returned
 
         if(DetectionTypes == 0) {
+            text.setText("");
             String val = barcode.rawValue;
             if(val.length() < 17) {
                 return;
@@ -528,18 +573,38 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             
             barcode.rawValue = val;
 
-            if(validateVin(val)) {
+            scannedBarcodes.add(val);
+            Log.w(TAG, "scannedBarcodes Array is => ");
+            Log.w(TAG, String.valueOf(scannedBarcodes) );
+            // if(validateVin(val)) {
+            //     Intent data = new Intent();
+            //     data.putExtra(BarcodeObject, barcode);
+            //     setResult(CommonStatusCodes.SUCCESS, data);
+            //     finish();
+            // }
+
+        } else {
+            if(ScanMode == 0){
+                scannedBarcodes.add(barcode.rawValue);
+                getVibrate();
                 Intent data = new Intent();
-                data.putExtra(BarcodeObject, barcode);
-                setResult(CommonStatusCodes.SUCCESS, data);
+                data.putExtra(BarcodeObject, String.valueOf(scannedBarcodes) );
+                setResult(CommonStatusCodes.SUCCESS, data );
                 finish();
             }
 
-        } else {
-            Intent data = new Intent();
-            data.putExtra(BarcodeObject, barcode);
-            setResult(CommonStatusCodes.SUCCESS, data);
-            finish();
+            if( AllowDuplicates == 1 || !scannedBarcodes.contains(barcode.rawValue) ){
+                Log.w(TAG,"I should be here !");
+                scannedBarcodes.add(barcode.rawValue);
+                getVibrate();
+                ((Activity) this).runOnUiThread(new Runnable() { 
+                    @Override
+                    public void run() {
+                       text.setText(String.valueOf(scannedBarcodes.size()) + "> " +barcode.rawValue);
+                    }
+                });
+            }
+
         }
 
     }
