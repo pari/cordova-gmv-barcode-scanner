@@ -56,6 +56,9 @@ public class SecondaryActivity extends Activity implements View.OnClickListener 
         intent.putExtra("ViewFinderWidth", getIntent().getDoubleExtra("ViewFinderWidth", .5));
         intent.putExtra("ViewFinderHeight", getIntent().getDoubleExtra("ViewFinderHeight", .7));
         intent.putExtra("ViewDisplayString", getIntent().getStringExtra("ViewDisplayString"));
+        intent.putExtra("ScanMode", getIntent().getIntExtra("ScanMode", 0));
+        intent.putExtra("allowDuplicates", getIntent().getIntExtra("allowDuplicates", 0));
+
         Log.w(TAG, "Hi - SA" );
         Log.w(TAG, getIntent().getStringExtra("ViewDisplayString") );
         //System.out.println("SecondaryActivity  =======> ");
@@ -109,8 +112,8 @@ public class SecondaryActivity extends Activity implements View.OnClickListener 
             Intent d = new Intent();
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
-                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                    d.putExtra(BarcodeObject, barcode);
+                    //Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                    //d.putExtra(BarcodeObject, barcode);
                     setResult(CommonStatusCodes.SUCCESS, data);
                 } else {
                     d.putExtra("err", "USER_CANCELLED");
