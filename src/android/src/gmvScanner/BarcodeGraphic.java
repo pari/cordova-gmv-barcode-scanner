@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.dealrinc.gmvScanner.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -28,7 +29,7 @@ import com.google.android.gms.vision.barcode.Barcode;
  * overlay view.
  */
 public class BarcodeGraphic extends GraphicOverlay.Graphic {
-
+    private static final String TAG = "TESTGMV-BarcodeGraphic";
     private int mId;
 
     private static final int COLOR_CHOICES[] = {
@@ -76,6 +77,7 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
      * relevant portions of the overlay to trigger a redraw.
      */
     void updateItem(Barcode barcode) {
+        Log.d(TAG, "updateItem()" );
         mBarcode = barcode;
         postInvalidate();
     }

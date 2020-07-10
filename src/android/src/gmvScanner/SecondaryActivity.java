@@ -43,6 +43,7 @@ public class SecondaryActivity extends Activity implements View.OnClickListener 
     private static final int RC_BARCODE_CAPTURE = 9001;
     private static final String TAG = "TESTGMV-BarcodeMain";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +62,10 @@ public class SecondaryActivity extends Activity implements View.OnClickListener 
 
         Log.w(TAG, "Hi - SA" );
         Log.w(TAG, getIntent().getStringExtra("ViewDisplayString") );
-        //System.out.println("SecondaryActivity  =======> ");
+        // if(getIntent().getStringExtra("ViewDisplayString")=""){
+        //     System.out.println(TAG+ "Called =======>")
+        // }
+        // System.out.println("SecondaryActivity  =======> "+getIntent().getStringExtra("ViewDisplayString"));
 
         startActivityForResult(intent, RC_BARCODE_CAPTURE);
 

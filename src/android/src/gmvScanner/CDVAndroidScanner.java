@@ -35,9 +35,9 @@ public class CDVAndroidScanner extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		Context context = cordova.getActivity().getApplicationContext();
+        Context context = cordova.getActivity().getApplicationContext();
         mCallbackContext = callbackContext;
-		if (action.equals("startScan")) {
+        if (action.equals("startScan")) {
 
             class OneShotTask implements Runnable {
                 private Context context;
@@ -55,7 +55,9 @@ public class CDVAndroidScanner extends CordovaPlugin {
     }
 
     private void openNewActivity(Context context, JSONArray args) {
-		Intent intent = new Intent(context, SecondaryActivity.class);
+        Log.d(TAG, "CDVAndroidScanner -> openNewActivity" );
+
+        Intent intent = new Intent(context, SecondaryActivity.class);
         intent.putExtra("DetectionTypes", args.optInt(0, 1234));
         intent.putExtra("ViewFinderWidth", args.optDouble(1, .5));
         intent.putExtra("ViewFinderHeight", args.optDouble(2, .7));
@@ -63,13 +65,9 @@ public class CDVAndroidScanner extends CordovaPlugin {
         intent.putExtra("ScanMode", args.optInt(4, 0) );
         intent.putExtra("allowDuplicates", args.optInt(5, 0) );
         //System.out.println("CDVAndroidScanner  =======> ");
-
-        Log.d(TAG, "ViewDisplayString Is " );
-        Log.d(TAG, String.valueOf(  args ) );
-
         this.cordova.setActivityResultCallback(this);
         this.cordova.startActivityForResult(this, intent, RC_BARCODE_CAPTURE);
-	}
+    }
 
 
     @Override
@@ -104,14 +102,14 @@ public class CDVAndroidScanner extends CordovaPlugin {
     
 /*
     private void startScan(CallbackContext callbackContext) {
-		Intent intent = new Intent(this, MainActivity.class);
-		//intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
-		//intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
+        Intent intent = new Intent(this, MainActivity.class);
+        //intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
+        //intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
 
-		startActivityForResult(intent, RC_BARCODE_CAPTURE);
+        startActivityForResult(intent, RC_BARCODE_CAPTURE);
 
         if (true) {
-			callbackContext.success("Test response!!!!");
+            callbackContext.success("Test response!!!!");
         } else {
             callbackContext.error("Expected one non-empty string argument.");
         }

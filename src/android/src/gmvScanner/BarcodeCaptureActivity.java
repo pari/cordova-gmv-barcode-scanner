@@ -44,6 +44,7 @@ import android.widget.Toast;
 import android.view.WindowManager;
 import android.view.Display;
 import android.graphics.Point;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -70,7 +71,7 @@ import android.view.View.OnClickListener;
  */
 public final class BarcodeCaptureActivity extends AppCompatActivity implements 
      BarcodeGraphicTracker.BarcodeUpdateListener {
-    private static final String TAG = "TESTGMV-Barcode-reader";
+    private static final String TAG = "TESTGMV-BarcodeCaptureActivity";
 
     // intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
@@ -103,6 +104,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
      */
     @Override
     public void onCreate(Bundle icicle) {
+        Log.d(TAG, "-> onCreate() Start" );
         super.onCreate(icicle);
         scannedBarcodes = new ArrayList<String>();
         //setContentView(R.layout.barcode_capture);
@@ -111,6 +113,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+        
         // Remember that you should never show the action bar if the
         // status bar is hidden, so hide that too if necessary.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -119,6 +122,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             getActionBar().hide();
         }
 
+        
         if(getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -132,7 +136,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         mPreview.ViewFinderWidth = ViewFinderWidth;
         mPreview.ViewFinderHeight = ViewFinderHeight;
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(getResources().getIdentifier("graphicOverlay", "id", getPackageName()));
-        text     = (TextView) findViewById(getResources().getIdentifier("text_view_id", "id", getPackageName()));
+        
+        text     = (TextView) findViewById(getResources().getIdentifier("text_view_id", "id", getPackageName()));        
         done     = (Button) findViewById(getResources().getIdentifier("button_view_id", "id", getPackageName())); 
         done.setOnClickListener(donelistener);
 
@@ -144,25 +149,24 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
         ScanMode = getIntent().getIntExtra("ScanMode", 0);
         AllowDuplicates = getIntent().getIntExtra("allowDuplicates", 0);
 
-
         text.setText(ViewDisplayString);
-        Log.w(TAG, "ViewDisplayString is ** ");
-        Log.w(TAG, ViewDisplayString );
-
-         System.out.println("BarcodeCaptureActivity  =======> ");
 
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onCreate()::HasCamerAccess" );
             createCameraSource(true, false);
         } else {
+            Log.d(TAG, "onCreate():: Requesting CamerAccess" );
             requestCameraPermission();
         }
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+
+        Log.d(TAG, "onCreate.END()" );
     }
 
     /**
@@ -527,14 +531,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
 
     public void getVibrate(){
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(200);
         // Vibrate for 500 milliseconds
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             //deprecated in API 26 
             v.vibrate(500);
-        }*/
+        }
     }
 
 
@@ -560,7 +563,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
     @Override
     public void onBarcodeDetected(final Barcode barcode) {
         //do something with barcode data returned
-
+        Log.w(TAG, "onBarcodeDetected() ");
+         Log.w(TAG, "DetectionTypes is " + DetectionTypes);
         if(DetectionTypes == 0) {
             text.setText("");
             String val = barcode.rawValue;
@@ -584,12 +588,19 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements
             // }
 
         } else {
+            Log.w(TAG, "DetectionTypes is not equal to 0 ");
             if(ScanMode == 0){
+                // Return after first Barcode Scan 
+                Log.w(TAG, "Return after first Barcode Scan");
                 scannedBarcodes.add(barcode.rawValue);
+                Log.w(TAG, "Scanned Value is " + barcode.rawValue );
                 getVibrate();
+                Log.w(TAG, "invoking data Intent " );
                 Intent data = new Intent();
                 data.putExtra(BarcodeObject, String.valueOf(scannedBarcodes) );
+                Log.w(TAG, "invoking setResult() " );
                 setResult(CommonStatusCodes.SUCCESS, data );
+                Log.w(TAG, "finish()" );
                 finish();
             }
 

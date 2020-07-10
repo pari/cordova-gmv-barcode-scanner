@@ -29,7 +29,7 @@ GMVBarcodeScanner.prototype.scan = function(params, callback) {
             width: .5,
             height: .7
         },
-        displayString: "",
+        displayString: "Scan a Barcode",
         scanMode : 0 , // 0 for single scan , 1 for continuous 
         allowDuplicates : 0 // this variable applies only for continuous mode , 
             // 0 for do not allow duplicates , 1 for allow duplicates 
