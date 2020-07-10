@@ -57,9 +57,14 @@ window.plugins.GMVBarcodeScanner.scan( options , function(err, result) {
 
 ````
 
-Note: While making changes to android code of the plugin , the build process copies the plugin in many places - 
+Note: While making changes to android code of the plugin , 
+      the build process copies the plugin in many places - 
+      
       You should be working in the folder :
       $YOUR_PROJECT/platforms/android/app/src/main/java/com/dealrinc/gmvScanner/
+      
+      The UI is in the folder 
+      $YOUR_PROJECT/platforms/android/app/src/main/res/layout/barcode_capture.xml
       
       AND NOT the following folders
       $PROJECT/node_modules/cordova-gmv-barcode-scanner/src/android/src/gmvScanner/
