@@ -57,4 +57,10 @@ window.plugins.GMVBarcodeScanner.scan( options , function(err, result) {
 
 ````
 
-
+Note: While making changes to android code of the plugin , the build process copies the plugin in many places - 
+      You should be working in the folder :
+      $YOUR_PROJECT/platforms/android/app/src/main/java/com/dealrinc/gmvScanner/
+      Once you have finalized your changes to the Source - commit the diff to this code base
+      
+      adb logcat | grep TESTGMV
+      
