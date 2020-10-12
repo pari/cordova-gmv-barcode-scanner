@@ -1,3 +1,6 @@
+** THIS IS RATHER OUTDATED STUFF and sometimes gives wrong scans **
+Insated you should be Use https://github.com/Ratsoc/cordova-plugin-firebase-ml-kit-barcode-scanner
+
 
 cordova-gmv-barcode-scanner
 ===========================
